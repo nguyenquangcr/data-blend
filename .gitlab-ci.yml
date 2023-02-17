@@ -1,0 +1,155 @@
+include:       
+  - project: "ci-templates/ci-templates"
+    file: "base/react.gitlab-ci.yml"
+    ref: "v2.0.1"
+
+variables:
+  APP_NAME: ${CI_PROJECT_NAME}
+  PROJECT: "data-platform"
+
+compile:dev:
+  extends:
+    - .compile-dev
+  environment:
+    name: dev
+  script:
+    - export NODE_OPTIONS=--max-old-space-size=8192
+    - echo "$VAULT_IP  $VAULT_DOMAIN" >> /etc/hosts
+    - bash entrypoint.sh
+    - cat .env 
+    - yarn install 
+    - yarn run build
+  only:
+    refs:
+      - develop
+      - feature/azure-intergration
+
+compile:staging:
+  extends:
+    - .compile-staging
+  environment:
+    name: staging
+  script:
+    - export NODE_OPTIONS=--max-old-space-size=8192
+    - echo "$VAULT_IP  $VAULT_DOMAIN" >> /etc/hosts
+    - bash entrypoint.sh
+    - cat .env
+    - yarn install 
+    - yarn run build
+  only:
+    refs:
+      - staging
+      - feature/azure-intergration-staging
+
+compile:production:
+  extends:
+    - .compile-production
+  environment:
+    name: prod
+  script:
+    - export NODE_OPTIONS=--max-old-space-size=8192
+    - echo "$VAULT_IP  $VAULT_DOMAIN" >> /etc/hosts
+    - bash entrypoint.sh
+    - cat .env 
+    - yarn install 
+    - yarn run build
+  only:
+    refs:
+      - master
+
+compile:public:
+  extends:
+    - .compile-public
+  environment:
+    name: public
+  script:
+    - export NODE_OPTIONS=--max-old-space-size=8192
+    - echo "$VAULT_IP  $VAULT_DOMAIN" >> /etc/hosts
+    - bash entrypoint.sh
+    - cat .env 
+    - yarn install 
+    - yarn run build
+  only:
+    - /^release-.*$/
+
+dockerize:dev:
+  extends:
+    - .dockerize-dev
+  environment:
+    name: dev
+  only:
+    refs:
+      - develop
+      - feature/azure-intergration
+
+dockerize:staging:
+  extends:
+    - .dockerize-staging
+  environment:
+    name: staging
+  only:
+    refs:
+      - staging
+      - feature/azure-intergration-staging
+
+dockerize:production:
+  extends:
+    - .dockerize-production
+  environment:
+    name: prod
+  only:
+    refs:
+      - master
+
+dockerize:public:
+  extends:
+    - .dockerize-public
+  environment:
+    name: public
+
+deploy:dev:
+  extends:
+    - .deploy-dev
+  environment:
+    name: dev
+  before_script:
+    - export POD_LIMIT_CPU=0.5
+    - export POD_LIMIT_MEMORY=4Gi
+    - export POD_REQUEST_CPU=0.1
+    - export POD_REQUEST_MEMORY=100Mi
+    - export HOST_APP=dev-cadshouse.fpt.vn
+  only:
+    refs:
+      - develop
+      - feature/azure-intergration
+
+deploy:staging:
+  extends:
+    - .deploy-staging
+  environment:
+    name: staging
+  before_script:
+    - export POD_LIMIT_CPU=0.5
+    - export POD_LIMIT_MEMORY=4Gi
+    - export POD_REQUEST_CPU=0.1
+    - export POD_REQUEST_MEMORY=100Mi
+    - export HOST_APP=staging-cadshouse.fpt.vn
+  only:
+    refs:
+      - staging
+      - feature/azure-intergration-staging
+
+deploy:production:
+  extends:
+    - .deploy-production
+  environment:
+    name: prod
+  before_script:
+    - export POD_LIMIT_CPU=0.5
+    - export POD_LIMIT_MEMORY=4Gi
+    - export POD_REQUEST_CPU=0.3
+    - export POD_REQUEST_MEMORY=500Mi
+    - export HOST_APP=cadshouse.fpt.vn
+  only:
+    refs:
+      - master

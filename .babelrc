@@ -1,0 +1,51 @@
+{
+  "presets": [
+    "babel-preset-react-app",
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic"
+      }
+    ]
+  ],
+  "plugins": [
+    ["@babel/plugin-syntax-dynamic-import"],
+    ["@babel/plugin-transform-runtime"],
+    [
+      "babel-plugin-root-import",
+      {
+        "paths": [
+          {
+            "rootPathPrefix": "~",
+            "rootPathSuffix": "src"
+          },
+          {
+            "rootPathPrefix": "src",
+            "rootPathSuffix": "src"
+          },
+          {
+            "rootPathPrefix": "assets",
+            "rootPathSuffix": "src/assets"
+          }
+        ]
+      }
+    ],
+    [
+      "transform-imports",
+      {
+        "@mui/material": {
+          "transform": "@mui/material/${member}",
+          "preventFullImport": true
+        },
+        "@mui/icons-material": {
+          "transform": "@mui/icons-material/${member}",
+          "preventFullImport": true
+        },
+        "lodash": {
+          "transform": "lodash/${member}",
+          "preventFullImport": true
+        }
+      }
+    ]
+  ]
+}

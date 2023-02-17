@@ -1,0 +1,132 @@
+import React from 'react';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import { Form, FormikProvider } from 'formik';
+import { QuillEditor } from '~/components/Editor';
+import { UploadSingleFile } from '~/components/Upload';
+import { LoadingButton } from '@mui/lab';
+import { makeStyles } from '@mui/styles';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  FormHelperText
+} from '@mui/material';
+
+// ----------------------------------------------------------------------
+
+const useStyles = makeStyles(theme => ({
+  root: {},
+  margin: {
+    marginBottom: theme.spacing(3)
+  },
+  helperText: {
+    padding: theme.spacing(0, 2)
+  }
+}));
+
+// ----------------------------------------------------------------------
+
+PostDetailsView.propTypes = {
+  formik: PropTypes.object.isRequired,
+  onOpenPreview: PropTypes.func,
+  className: PropTypes.string
+};
+
+function PostDetailsView({ formik, onOpenPreview, className, ...other }) {
+  const classes = useStyles();
+  const {
+    errors,
+    values,
+    touched,
+    handleSubmit,
+    isSubmitting,
+    setFieldValue,
+    getFieldProps
+  } = formik;
+
+  return (
+    <FormikProvider value={formik}>
+      <Form
+        noValidate
+        autoComplete="off"
+        onSubmit={handleSubmit}
+        className={clsx(classes.root, className)}
+        {...other}
+      >
+        <TextField
+          fullWidth
+          label="Post Title"
+          {...getFieldProps('title')}
+          error={Boolean(touched.title && errors.title)}
+          helperText={touched.title && errors.title}
+          className={classes.margin}
+        />
+
+        <TextField
+          fullWidth
+          multiline
+          minRows={3}
+          maxRows={5}
+          label="Description"
+          {...getFieldProps('description')}
+          error={Boolean(touched.description && errors.description)}
+          helperText={touched.description && errors.description}
+          className={classes.margin}
+        />
+
+        <div className={classes.margin}>
+          <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+            Content
+          </Typography>
+          <QuillEditor
+            id="post-content"
+            value={values.content}
+            onChange={val => setFieldValue('content', val)}
+            error={Boolean(touched.content && errors.content)}
+          />
+          <FormHelperText error className={classes.helperText}>
+            {touched.content && errors.content}
+          </FormHelperText>
+        </div>
+
+        <div className={classes.margin}>
+          <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+            Cover
+          </Typography>
+          <UploadSingleFile
+            value={values.cover}
+            onChange={val => setFieldValue('cover', val)}
+            caption="(Only *.jpeg and *.png images will be accepted)"
+            error={Boolean(touched.cover && errors.cover)}
+          />
+          <FormHelperText error className={classes.helperText}>
+            {touched.cover && errors.cover}
+          </FormHelperText>
+        </div>
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            type="button"
+            color="inherit"
+            variant="outlined"
+            onClick={onOpenPreview}
+            sx={{ mr: 1.5 }}
+          >
+            Preview
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            pending={isSubmitting}
+          >
+            Post
+          </LoadingButton>
+        </Box>
+      </Form>
+    </FormikProvider>
+  );
+}
+
+export default PostDetailsView;

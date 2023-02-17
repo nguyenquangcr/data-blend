@@ -1,0 +1,33 @@
+.circle-port {
+  width: 12px;
+  height: 12px;
+  border-radius: 12px;
+  background: #898d9c;
+  border: 4px solid #edeff5;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  position: absolute;
+  top: 50%;
+}
+.circle-port:hover {
+  background: #bbb;
+  transition: background 200ms ease;
+}
+
+.circle-port-left {
+  left: -5%;
+}
+.circle-port-right {
+  right: -5%;
+}
+
+.circle-port.react-flow__handle-connecting:hover,
+.port-add.react-flow__handle-connecting:hover {
+  background: #e64427;
+  transition: background 200ms ease;
+}
+.circle-port.react-flow__handle-valid:hover,
+.port-add.react-flow__handle-valid:hover {
+  background: #0caa67;
+  transition: background 200ms ease;
+}
